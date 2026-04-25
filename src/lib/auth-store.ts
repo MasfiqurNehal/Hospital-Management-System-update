@@ -9,8 +9,10 @@ interface AuthState {
   tenant: Tenant | null;
   accessToken: string | null;
   isAuthenticated: boolean;
+  hasHydrated: boolean;
   setSession: (session: AuthSession) => void;
   clearSession: () => void;
+  setHasHydrated: (value: boolean) => void;
   hasRole: (...roles: UserRole[]) => boolean;
 }
 
@@ -21,6 +23,7 @@ export const useAuthStore = create<AuthState>()(
       tenant: null,
       accessToken: null,
       isAuthenticated: false,
+      hasHydrated: false,
       setSession: (session) =>
         set({
           user: session.user,
@@ -30,12 +33,18 @@ export const useAuthStore = create<AuthState>()(
         }),
       clearSession: () =>
         set({ user: null, tenant: null, accessToken: null, isAuthenticated: false }),
+      setHasHydrated: (value) => set({ hasHydrated: value }),
       hasRole: (...roles) => {
         const user = get().user;
         return user ? roles.includes(user.role) : false;
       },
     }),
-    { name: 'hms-auth' },
+    {
+      name: 'hms-auth',
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
+    },
   ),
 );
 

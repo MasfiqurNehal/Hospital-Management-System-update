@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Activity, ChevronLeft, X } from 'lucide-react';
+import { ChevronLeft, X } from 'lucide-react';
+import { BrandMark } from '@/components/shared/brand-mark';
 import { useAuthStore } from '@/lib/auth-store';
 import { navigationByRole, roleLabels } from '@/lib/navigation';
 import { Avatar } from '@/components/ui/avatar';
@@ -29,21 +30,33 @@ export function Sidebar({ collapsed, onToggle, onNavigate }: SidebarProps) {
       )}
     >
       {/* Brand */}
-      <div className={cn('flex h-16 shrink-0 items-center gap-2.5 border-b border-border px-4',
-        collapsed && 'justify-center px-2')}>
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 shadow-sm">
-          <Activity className="h-5 w-5 text-white" strokeWidth={2.5} />
-        </div>
-        {!collapsed && (
-          <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-bold text-foreground">
-              {tenant?.branding.display_name ?? 'HMS'}
-            </div>
-            <div className="truncate text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-              {roleLabels[user.role]}
-            </div>
-          </div>
+      <div
+        className={cn(
+          'flex h-16 shrink-0 items-center gap-2.5 border-b border-border px-4',
+          collapsed && 'justify-center px-2',
         )}
+      >
+        <Link
+          href="/"
+          onClick={onNavigate}
+          aria-label="Go to home page"
+          className={cn(
+            'flex min-w-0 flex-1 items-center gap-2.5 rounded-lg transition-colors hover:bg-secondary/70',
+            collapsed ? 'justify-center px-1 py-1' : 'px-1 py-2',
+          )}
+        >
+          <BrandMark compact={collapsed} />
+          {!collapsed && tenant?.branding.display_name && (
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-[10px] font-medium uppercase tracking-[0.24em] text-muted-foreground">
+                {tenant.branding.display_name}
+              </div>
+              <div className="truncate text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                {roleLabels[user.role]}
+              </div>
+            </div>
+          )}
+        </Link>
         {!collapsed && onNavigate && (
           <button
             onClick={onNavigate}

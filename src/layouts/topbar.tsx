@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Bell, CheckCircle2, LogOut, Menu, Search, Settings, ShieldCheck, User as UserIcon, X } from 'lucide-react';
-import { useAuthStore } from '@/lib/auth-store';
+import { Bell, CheckCircle2, Home, LogOut, Menu, Search, Settings, ShieldCheck, User as UserIcon, X } from 'lucide-react';
+import { BrandLink } from '@/components/shared/brand-mark';
+import { useAuthStore, roleDashboardPath } from '@/lib/auth-store';
 import { authAPI } from '@/lib/mock-api';
 import { MOCK_NOTIFICATIONS } from '@/lib/mock-data';
 import { Avatar } from '@/components/ui/avatar';
@@ -100,6 +102,7 @@ export function Topbar({ onMobileMenuOpen }: TopbarProps) {
 
   const unreadCount = MOCK_NOTIFICATIONS.filter((n) => !n.is_read).length;
   const settingsHref = user.role === 'hospital_admin' ? '/admin/settings' : '/profile?section=settings';
+  const alertsHref = user.role === 'hospital_admin' ? '/admin/alerts' : roleDashboardPath(user.role);
 
   async function handleLogout() {
     await authAPI.logout();
@@ -130,12 +133,12 @@ export function Topbar({ onMobileMenuOpen }: TopbarProps) {
       </button>
 
       {/* Hospital name (mobile only) */}
-      <div className="flex-1 truncate text-sm font-semibold lg:hidden">
-        {tenant?.branding.display_name ?? 'HMS'}
+      <div className="flex-1 truncate lg:hidden">
+        <BrandLink href="/" compact className="inline-flex" />
       </div>
 
       {/* Search */}
-      <div className="hidden flex-1 max-w-md lg:block">
+      <div className="hidden min-w-0 flex-1 max-w-2xl lg:block">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
@@ -150,7 +153,15 @@ export function Topbar({ onMobileMenuOpen }: TopbarProps) {
       </div>
 
       {/* Right cluster */}
-      <div className="ml-auto flex items-center gap-1.5">
+      <div className="ml-auto flex shrink-0 items-center gap-1.5">
+        <Link
+          href="/"
+          className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-secondary"
+        >
+          <Home className="h-4 w-4" />
+          <span className="hidden sm:inline">Home</span>
+        </Link>
+
         {/* Notifications */}
         <div className="relative">
           <button
@@ -225,7 +236,7 @@ export function Topbar({ onMobileMenuOpen }: TopbarProps) {
                   ))}
                 </div>
                 <div className="border-t border-border px-4 py-2.5 text-center">
-                  <a href="/admin/alerts" className="text-xs font-medium text-primary hover:underline">
+                  <a href={alertsHref} className="text-xs font-medium text-primary hover:underline">
                     View all alerts
                   </a>
                 </div>

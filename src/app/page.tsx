@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
   ArrowRight,
   BookOpen,
@@ -13,6 +12,7 @@ import {
   CircleDollarSign,
   FlaskConical,
   HeartHandshake,
+  LayoutDashboard,
   Menu,
   MessageCircle,
   Search,
@@ -20,9 +20,10 @@ import {
   Stethoscope,
   Users,
 } from 'lucide-react';
+import { BrandLink, BrandMark } from '@/components/shared/brand-mark';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useAuthStore, roleDashboardPath } from '@/lib/auth-store';
+import { roleDashboardPath, useAuthStore } from '@/lib/auth-store';
 
 // Replace these files later with your own photos inside /public/real-images.
 const landingImages = {
@@ -180,30 +181,9 @@ function Reveal({
   );
 }
 
-function BrandMark({ dark = false }: { dark?: boolean }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="relative h-12 w-12 rounded-full bg-[#35d0ad]">
-        <div className="absolute inset-[9px] rounded-full border-[8px] border-white border-r-transparent border-t-transparent rotate-45" />
-        <div className="absolute right-[10px] top-[7px] h-4 w-4 rotate-45 bg-[#7ee5ce]" />
-      </div>
-      <div className={`text-[18px] font-extrabold leading-[0.95] ${dark ? 'text-white' : 'text-slate-700'}`}>
-        <div>HMS</div>
-        <div>Alert</div>
-      </div>
-    </div>
-  );
-}
-
 export default function RootPage() {
-  const router = useRouter();
   const { isAuthenticated, user } = useAuthStore();
-
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      router.replace(roleDashboardPath(user.role));
-    }
-  }, [isAuthenticated, user, router]);
+  const portalHref = user ? roleDashboardPath(user.role) : '/login';
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#fcfbf8] text-[#25345a]">
@@ -219,9 +199,7 @@ export default function RootPage() {
 
         <div className="border-b border-slate-200 shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
           <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 animate-fade-down sm:px-6 lg:px-8">
-            <Link href="/" aria-label="HMS Alert home" className="animate-scale-in">
-              <BrandMark />
-            </Link>
+            <BrandLink href="/" className="animate-scale-in" />
 
             <nav className="hidden items-center gap-10 text-[15px] font-semibold text-slate-950 lg:flex">
               {primaryNav.map((item, index) => (
@@ -237,6 +215,18 @@ export default function RootPage() {
             </nav>
 
             <div className="flex items-center gap-3">
+              {isAuthenticated && user && (
+                <Button
+                  asChild
+                  variant="outline"
+                  size="icon"
+                  className="h-11 w-11 rounded-full border-[#25c9a7]/45 bg-white text-[#1f2a44] hover:bg-[#ecfffa]"
+                >
+                  <Link href={portalHref} aria-label="Open user portal" title="Open user portal">
+                    <LayoutDashboard className="h-5 w-5" />
+                  </Link>
+                </Button>
+              )}
               <Button
                 asChild
                 className="rgb-button hidden h-12 rounded-full border border-[#25c9a7] bg-[#1f2a44] px-7 text-[15px] font-semibold text-white shadow-none hover:bg-[#24314f] sm:inline-flex"

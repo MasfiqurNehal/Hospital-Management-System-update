@@ -3,17 +3,18 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { BrandLink } from '@/components/shared/brand-mark';
 import { authAPI } from '@/lib/mock-api';
-import { useAuthStore, roleDashboardPath } from '@/lib/auth-store';
+import { useAuthStore } from '@/lib/auth-store';
 import { DEMO_CREDENTIALS } from '@/lib/mock-data';
 
 export default function LoginPage() {
   const router = useRouter();
-  const setSession = useAuthStore((s) => s.setSession);
+  const { setSession } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -28,7 +29,7 @@ export default function LoginPage() {
     try {
       const res = await authAPI.login({ email, password });
       setSession(res.data);
-      router.push(roleDashboardPath(res.data.user.role));
+      router.replace('/');
     } catch (err) {
       const msg = err instanceof Error ? err.message : (err as { message?: string })?.message;
       setError(msg || 'Login failed. Please try again.');
@@ -45,6 +46,16 @@ export default function LoginPage() {
 
   return (
     <div className="space-y-6 opacity-0 animate-fade-up">
+      <div className="flex items-center justify-between gap-3">
+        <BrandLink href="/" />
+        <Button asChild variant="outline" className="gap-2">
+          <Link href="/">
+            <Home className="h-4 w-4" />
+            Home
+          </Link>
+        </Button>
+      </div>
+
       <div className="space-y-2">
         <h2 className="text-3xl font-bold tracking-tight text-foreground">Welcome back</h2>
         <p className="text-sm text-muted-foreground">

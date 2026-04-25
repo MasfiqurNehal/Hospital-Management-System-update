@@ -1,5 +1,8 @@
 import type { ReactNode } from 'react';
-import { Activity, ShieldCheck, Zap } from 'lucide-react';
+import Link from 'next/link';
+import { Home, ShieldCheck, Zap, Activity } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { BrandLink } from '@/components/shared/brand-mark';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -12,14 +15,18 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
         <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
           {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm ring-1 ring-white/20">
-              <Activity className="h-5 w-5 text-white" strokeWidth={2.5} />
-            </div>
-            <div>
-              <div className="text-lg font-bold tracking-tight">HMS</div>
-              <div className="text-xs text-white/70 -mt-0.5">Hospital Management</div>
-            </div>
+          <div className="flex items-center justify-between gap-4">
+            <BrandLink dark href="/" />
+            <Button
+              asChild
+              variant="outline"
+              className="border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white"
+            >
+              <Link href="/">
+                <Home className="h-4 w-4" />
+                Home
+              </Link>
+            </Button>
           </div>
 
           {/* Middle content */}
