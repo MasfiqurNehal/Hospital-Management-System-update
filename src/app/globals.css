@@ -133,6 +133,185 @@
     50% { box-shadow: 0 0 0 8px hsl(0 84% 55% / 0); }
   }
 
+  .animate-fade-up {
+    animation: fade-up 0.65s ease-out both;
+  }
+
+  .animate-fade-up-slow {
+    animation: fade-up-slow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-fade-down {
+    animation: fade-down 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-fade-left {
+    animation: fade-left 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-fade-right {
+    animation: fade-right 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-rise-in {
+    animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-float-soft {
+    animation: float-soft 5.5s ease-in-out infinite;
+  }
+  @keyframes float-soft {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 28s linear infinite;
+  }
+
+  .animate-spin-slower {
+    animation: spin-slower 42s linear infinite;
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes spin-slower {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
+
+  .reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(34px) scale(0.98);
+    transition:
+      opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+
+  .reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .rgb-border-card {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .rgb-border-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from 0deg,
+      rgba(255, 89, 89, 0.95),
+      rgba(255, 206, 84, 0.95),
+      rgba(52, 208, 174, 0.95),
+      rgba(79, 168, 255, 0.95),
+      rgba(168, 85, 247, 0.95),
+      rgba(255, 89, 89, 0.95)
+    );
+    animation: rgb-border-spin 8s linear infinite;
+    opacity: 0.8;
+    z-index: -2;
+  }
+
+  .rgb-border-card::after {
+    content: '';
+    position: absolute;
+    inset: 1.5px;
+    border-radius: inherit;
+    background: inherit;
+    z-index: -1;
+  }
+
+  .rgb-button {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+      transform 0.35s ease,
+      box-shadow 0.35s ease,
+      filter 0.35s ease;
+  }
+
+  .rgb-button::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from 0deg,
+      rgba(255, 89, 89, 0.95),
+      rgba(255, 206, 84, 0.95),
+      rgba(52, 208, 174, 0.95),
+      rgba(79, 168, 255, 0.95),
+      rgba(168, 85, 247, 0.95),
+      rgba(255, 89, 89, 0.95)
+    );
+    animation: rgb-border-spin 6s linear infinite;
+    z-index: -2;
+  }
+
+  .rgb-button::after {
+    content: '';
+    position: absolute;
+    inset: 1.5px;
+    border-radius: inherit;
+    background: inherit;
+    z-index: -1;
+  }
+
+  .rgb-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 45px rgba(36, 209, 174, 0.2);
+    filter: saturate(1.08);
+  }
+
+  @keyframes rgb-border-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes fade-up-slow {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fade-down {
+    from { opacity: 0; transform: translateY(-18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fade-left {
+    from { opacity: 0; transform: translateX(32px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes fade-right {
+    from { opacity: 0; transform: translateX(-32px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(36px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
   /* Scrollbar styling */
   .scrollbar-slim::-webkit-scrollbar { width: 6px; height: 6px; }
   .scrollbar-slim::-webkit-scrollbar-thumb {
