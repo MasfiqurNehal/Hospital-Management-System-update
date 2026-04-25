@@ -1,0 +1,55 @@
+import { FlaskConical } from 'lucide-react';
+import { PageHeader, SectionCard, KPICard } from '@/components/shared';
+import { Badge } from '@/components/ui/badge';
+import { MOCK_LAB_TESTS } from '@/lib/mock-data';
+import { formatDateTime } from '@/lib/utils';
+
+const patientId = 'patient-001';
+
+export default function PatientLabReportsPage() {
+  const reports = MOCK_LAB_TESTS.filter((test) => test.patient_id === patientId);
+
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Lab Reports" description="Investigation status, reported results, and critical flags." />
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <KPICard label="Reports" value={reports.length} icon={FlaskConical} />
+        <KPICard label="Reported" value={reports.filter((report) => report.status === 'reported').length} icon={FlaskConical} accentColor="healthy" />
+        <KPICard label="Critical" value={reports.filter((report) => report.overall_flag === 'critical').length} icon={FlaskConical} accentColor="critical" />
+      </div>
+
+      <SectionCard title="My Test Reports" description="SRS Module 5">
+        <div className="divide-y divide-border">
+          {reports.map((report) => (
+            <div key={report.id} className="px-5 py-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <div className="font-semibold">{report.test_name}</div>
+                  <div className="text-sm text-muted-foreground">Ordered by {report.ordered_by_doctor_name}</div>
+                  <div className="text-xs text-muted-foreground">{formatDateTime(report.ordered_at)}</div>
+                </div>
+                <div className="flex gap-2">
+                  <Badge variant={report.overall_flag === 'critical' ? 'critical' : report.overall_flag === 'borderline' ? 'borderline' : 'healthy'}>
+                    {report.overall_flag}
+                  </Badge>
+                  <Badge variant={report.status === 'reported' ? 'healthy' : 'accent'} className="capitalize">{report.status.replace(/_/g, ' ')}</Badge>
+                </div>
+              </div>
+              {report.results && (
+                <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                  {report.results.map((result) => (
+                    <div key={result.parameter_id} className="rounded-lg bg-secondary/30 px-3 py-2 text-sm">
+                      <div className="font-medium">{result.parameter_name}</div>
+                      <div className="text-xs text-muted-foreground">{result.value} {result.unit} ({result.flag})</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+    </div>
+  );
+}
