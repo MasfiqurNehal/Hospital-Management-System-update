@@ -1,0 +1,30 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1200" fill="#06131F"/>
+  <rect width="1600" height="1200" fill="url(#paint0_radial)"/>
+  <circle cx="1288" cy="312" r="260" fill="#38BDF8" fill-opacity="0.22"/>
+  <circle cx="274" cy="884" r="320" fill="#14B8A6" fill-opacity="0.18"/>
+  <rect x="140" y="140" width="1320" height="920" rx="42" fill="#0F172A" fill-opacity="0.5" stroke="white" stroke-opacity="0.12"/>
+  <rect x="206" y="210" width="486" height="760" rx="34" fill="#F8FAFC" fill-opacity="0.94"/>
+  <rect x="252" y="270" width="210" height="18" rx="9" fill="#0B4F6C" fill-opacity="0.24"/>
+  <rect x="252" y="328" width="394" height="220" rx="30" fill="#E0F2FE"/>
+  <path d="M428 364C387.131 364 354 397.131 354 438C354 478.869 387.131 512 428 512C468.869 512 502 478.869 502 438C502 397.131 468.869 364 428 364ZM461.855 453.596H442.238V473.212C442.238 481.254 435.72 487.772 427.678 487.772C419.637 487.772 413.118 481.254 413.118 473.212V453.596H393.502C385.461 453.596 378.942 447.078 378.942 439.036C378.942 430.995 385.461 424.476 393.502 424.476H413.118V404.86C413.118 396.818 419.637 390.3 427.678 390.3C435.72 390.3 442.238 396.818 442.238 404.86V424.476H461.855C469.896 424.476 476.415 430.995 476.415 439.036C476.415 447.078 469.896 453.596 461.855 453.596Z" fill="#0EA5E9"/>
+  <rect x="252" y="588" width="394" height="118" rx="28" fill="#CCFBF1"/>
+  <rect x="252" y="732" width="394" height="172" rx="28" fill="#E2E8F0"/>
+  <rect x="760" y="210" width="646" height="344" rx="36" fill="#0B4F6C" fill-opacity="0.92"/>
+  <rect x="810" y="264" width="224" height="18" rx="9" fill="white" fill-opacity="0.38"/>
+  <rect x="810" y="314" width="302" height="66" rx="24" fill="white" fill-opacity="0.12"/>
+  <rect x="1154" y="302" width="196" height="126" rx="28" fill="#22D3EE" fill-opacity="0.18"/>
+  <path d="M1220 328H1288L1312 394C1322.44 422.713 1301.17 453 1270.62 453H1237.38C1206.83 453 1185.56 422.713 1196 394L1220 328Z" fill="#A5F3FC"/>
+  <rect x="760" y="602" width="646" height="368" rx="36" fill="#F8FAFC" fill-opacity="0.94"/>
+  <rect x="808" y="656" width="246" height="18" rx="9" fill="#0B4F6C" fill-opacity="0.22"/>
+  <rect x="808" y="710" width="548" height="36" rx="18" fill="#E2E8F0"/>
+  <rect x="808" y="778" width="170" height="128" rx="28" fill="#BAE6FD"/>
+  <rect x="996" y="778" width="170" height="128" rx="28" fill="#CCFBF1"/>
+  <rect x="1184" y="778" width="170" height="128" rx="28" fill="#DCFCE7"/>
+  <defs>
+    <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(800 0) rotate(90) scale(1200 1600)">
+      <stop stop-color="#164E63" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#06131F" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>

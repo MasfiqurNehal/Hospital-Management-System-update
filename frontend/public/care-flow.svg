@@ -1,0 +1,32 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1200" fill="#07111E"/>
+  <rect width="1600" height="1200" fill="url(#paint0_radial)"/>
+  <circle cx="1252" cy="252" r="240" fill="#22D3EE" fill-opacity="0.22"/>
+  <circle cx="360" cy="220" r="280" fill="#14B8A6" fill-opacity="0.16"/>
+  <circle cx="1180" cy="910" r="340" fill="#0F766E" fill-opacity="0.2"/>
+  <rect x="120" y="150" width="1360" height="900" rx="40" fill="#F8FAFC" fill-opacity="0.1" stroke="white" stroke-opacity="0.18"/>
+  <rect x="180" y="220" width="560" height="420" rx="34" fill="#E2F7F7" fill-opacity="0.92"/>
+  <rect x="220" y="270" width="220" height="18" rx="9" fill="#0F766E" fill-opacity="0.3"/>
+  <rect x="220" y="320" width="360" height="128" rx="24" fill="#0B4F6C"/>
+  <path d="M396 356H446V404H494V454H446V504H396V454H348V404H396V356Z" fill="#5EEAD4"/>
+  <rect x="220" y="476" width="210" height="102" rx="24" fill="#CCFBF1"/>
+  <rect x="446" y="476" width="254" height="102" rx="24" fill="#CFFAFE"/>
+  <rect x="810" y="220" width="610" height="240" rx="34" fill="#0B4F6C" fill-opacity="0.9"/>
+  <rect x="850" y="272" width="226" height="16" rx="8" fill="white" fill-opacity="0.42"/>
+  <rect x="850" y="318" width="350" height="58" rx="20" fill="white" fill-opacity="0.12"/>
+  <rect x="1224" y="288" width="144" height="104" rx="28" fill="#34D399" fill-opacity="0.22"/>
+  <path d="M1284 316C1263.01 316 1246 333.013 1246 354C1246 374.987 1263.01 392 1284 392C1304.99 392 1322 374.987 1322 354C1322 333.013 1304.99 316 1284 316ZM1300.1 358.7H1288.7V370.1C1288.7 372.64 1286.64 374.7 1284.1 374.7C1281.56 374.7 1279.5 372.64 1279.5 370.1V358.7H1268.1C1265.56 358.7 1263.5 356.64 1263.5 354.1C1263.5 351.56 1265.56 349.5 1268.1 349.5H1279.5V338.1C1279.5 335.56 1281.56 333.5 1284.1 333.5C1286.64 333.5 1288.7 335.56 1288.7 338.1V349.5H1300.1C1302.64 349.5 1304.7 351.56 1304.7 354.1C1304.7 356.64 1302.64 358.7 1300.1 358.7Z" fill="#A7F3D0"/>
+  <rect x="810" y="508" width="610" height="382" rx="34" fill="#F8FAFC" fill-opacity="0.92"/>
+  <rect x="854" y="560" width="238" height="18" rx="9" fill="#0B4F6C" fill-opacity="0.22"/>
+  <rect x="854" y="610" width="520" height="34" rx="17" fill="#E2E8F0"/>
+  <rect x="854" y="668" width="244" height="150" rx="28" fill="#CFFAFE"/>
+  <rect x="1120" y="668" width="254" height="150" rx="28" fill="#CCFBF1"/>
+  <circle cx="976" cy="744" r="42" fill="#0EA5E9" fill-opacity="0.24"/>
+  <circle cx="1248" cy="744" r="42" fill="#14B8A6" fill-opacity="0.24"/>
+  <defs>
+    <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(800 0) rotate(90) scale(1200 1560)">
+      <stop stop-color="#0F766E" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#07111E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>
