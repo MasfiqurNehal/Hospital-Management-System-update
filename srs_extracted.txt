@@ -1,0 +1,999 @@
+
+
+Hospital Management System
+Hospital Management System (HMS)
+& Hospital Alert System (HAS)
+SOFTWARE REQUIREMENTS SPECIFICATION
+Document Title
+Software Requirements Specification (SRS)
+Product
+Hospital Management & Alert System
+Version
+1.0  Initial Release
+Date
+April 2026
+Market
+Bangladesh  Healthcare Sector (Dhaka Metro & Major Cities)
+Classification
+Confidential  Stakeholder Review
+Prepared By
+Hospital Management System Technology Team
+
+
+                                           CONFIDENTIAL  For Stakeholder Approval Only
+
+Table of Contents
+Contents
+Table of Contents2
+1. Introduction3
+1.2 Intended Audience3
+1.3 Intended Use3
+1.4 Product Scope3
+1.5 Definitions and Acronyms4
+bKash / Nagad5
+2. Overall Description5
+2.1 User Needs6
+2.1.1 Hospital Administrators6
+2.1.2 Doctors & Clinical Staff6
+2.1.3 Patients6
+2.1.4 Lab Technicians & Pharmacists6
+2.1.5 Emergency & Security Personnel6
+2.2 Assumptions and Dependencies6
+2.2.1 Assumptions6
+2.2.2 Dependencies7
+3. System Features and Requirements7
+3.1 Functional Requirements7
+3.1.1 Module 1  Hospital Alert System (HAS)7
+3.1.2 Module 2  Patient Profile & Registration8
+3.1.3 Module 3  Appointment & Scheduling Management9
+3.1.4 Module 4  Digital Prescription Management9
+3.1.5 Module 5  Lab Test Management10
+3.1.6 Module 6  Medicine & Pharmacy Management10
+3.1.7 Module 7  Emergency & Ambulance Service10
+3.1.8 Module 8  Bed & Ward Management11
+3.1.9 Module 9  OPD & IPD Management11
+3.1.10 Module 10  Billing & Finance12
+3.1.11 Module 11  Doctor & Staff Management12
+3.1.12 Module 12  Multi Tenant Architecture & SaaS Admin Panel12
+3.1.13 Module 13  Analytics & Reporting Dashboard13
+3.2 Non Functional Requirements13
+3.2.1 Performance Requirements14
+3.2.2 Security Requirements14
+3.2.3 Usability Requirements15
+3.2.4 Reliability Requirements15
+3.2.5 Compliance Requirements15
+3.3 External Interface Requirements16
+3.3.1 User Interfaces16
+3.3.2 Hardware Interfaces16
+3.3.3 Software Interfaces16
+3.3.4 Communications Interfaces17
+3.4 System Features  Feature Matrix by Plan17
+4. Other Requirements18
+4.1 Database Requirements18
+4.1.1 Core Entity Relationships (Summary)18
+4.2 Legal and Regulatory Requirements19
+4.3 Internationalization and Localization19
+4.4 Risk Management  FMEA Matrix19
+5. Appendices21
+5.1 Glossary21
+5.2 Use Cases and Diagrams22
+5.2.1 Primary Use Case Summary22
+5.2.2 System Architecture Overview23
+5.3 To Be Determined (TBD) List23
+
+
+
+1. Introduction
+1.1 Purpose
+This Software Requirements Specification (SRS) defines the functional and nonfunctional requirements for the Hospital Management System Hospital Management System (HMS) and Hospital Alert System (HAS)  a cloud based, multitenant SaaS platform designed to digitize and centralize hospital operations in Bangladesh.
+This document serves as the authoritative reference for stakeholder approval, product development, quality assurance, and system acceptance testing. It provides a complete description of what the system shall do, the constraints under which it shall operate, and the standards it must meet.
+
+1.2 Intended Audience
+This SRS is intended for the following audiences:
+Project Sponsors & Investors for funding and go ahead approval
+Product Owners & Business Analysts for scope validation
+Software Architects & Development Team for technical design and implementation
+QA Engineers for test plan creation and acceptance criteria
+Hospital Administrators & Clinical Staff for requirement validation
+Legal & Compliance Officers for regulatory and data privacy review
+
+1.3 Intended Use
+Hospital Management System HMS is intended to be used as a multitenant SaaS platform accessible via web browser and mobile devices as a Progressive Web App (PWA). Hospital administrators, doctors, nurses, lab technicians, pharmacists, receptionists, and patients will interact with the system through role specific dashboards. The platform is designed for day today operational use including patient registration, appointment scheduling, digital prescriptions, lab test management, pharmacy dispensing, emergency response, and billing.
+
+1.4 Product Scope
+Hospital Management System HMS is a 13 module integrated hospital management platform:
+Hospital Alert System (HAS)  rule based real time multi channel alert engine (primary differentiator)
+Patient Profile & Registration MRN generation, health history timeline, family account management
+Appointment & Scheduling Management online booking, doctor availability, teleconsultation
+Digital Prescription Management drug interaction checks, e signature, pharmacy forwarding
+Lab Test Management  test booking, result entry, abnormal flagging, PDF report generation
+Medicine & Pharmacy Management  prescription queue, inventory tracking, dispensing audit
+Emergency & Ambulance Service SOS button, GPS tracking, ER pre notification
+Bed & Ward Management  real time occupancy map, admission/discharge tracking
+OPD & IPD Management patient status transitions, clinical notes, discharge summaries
+Billing & Finance  automated itemized billing, multi gateway payments, revenue reporting
+Doctor & Staff Management  RBAC, staff profiles, performance metrics
+MultiTenant Architecture & SaaS Admin Panel  tenant lifecycle, subscription billing
+Analytics & Reporting Dashboard  KPI dashboards, export functionality, pharma portal
+
+The system targets hospitals, clinics, and diagnostic centers in Bangladesh, with primary coverage of Dhaka Metro and major cities .
+
+Out of Scope (v1.0): AI/ML features, native iOS/Android mobile applications, IoT/smart device integration, multi country localization beyond Bangladesh, and legal e signature for patient consent forms.
+
+1.5 Definitions and Acronyms
+Term / Acronym
+Definition
+HMS
+Hospital Management System  the core product described in this document
+HAS
+Hospital Alert System  Hospital Management System’s proprietary real time multi channel alert engine
+SRS
+Software Requirements Specification  this document
+SaaS
+Software as a Service  cloud delivered subscription software model
+PWA
+Progressive Web App  web app installable on any device without App Store
+EARS
+Easy Approach to Requirements Syntax  structured natural language for system requirements
+BDD
+Behavior Driven Development  specification by example using Gherkin syntax
+FMEA
+Failure Mode and Effects Analysis  risk assessment methodology
+MRN
+Medical Record Number  unique patient identifier (format: HAX XXXXX)
+RBAC
+Role Based Access Control  permission system based on user roles
+OPD
+Outpatient Department  patients seen without hospital admission
+IPD
+Inpatient Department  patients admitted to the hospital
+MFA
+Multi Factor Authentication  two step identity verification
+API
+Application Programming Interface  system integration endpoint
+bKash / Nagad
+Bangladesh’s dominant mobile financial services used for digital payments
+SLA
+Service Level Agreement  contractual performance commitment
+BDT
+Bangladeshi Taka  local currency
+BMDC
+Bangladesh Medical and Dental Council  regulatory body for medical professionals
+NID
+National Identity Document  Bangladesh national ID card
+TBD
+To Be Determined  requirement detail not yet finalized
+KPI
+Key Performance Indicator  measurable business or technical metric
+Redis
+In memory data store used for caching and queue management
+EKS
+Amazon Elastic Kubernetes Service  managed container orchestration
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2. Overall Description
+2.1 User Needs
+Hospital Management System HMS addresses identified pain points across five user segments:
+
+2.1.1 Hospital Administrators
+Centralized digital record of all patients, staff, appointments, and financial transactions
+Real time ward and bed occupancy dashboards across all departments
+Automated financial reporting for revenue, outstanding bills, and department performance
+Single admin panel to manage multiple hospital branches under one account
+
+2.1.2 Doctors & Clinical Staff
+Digital prescription creation with automated drug interaction checking
+Realtime patient health history and lab result access during consultations
+Configurable alert rules for critical lab values and follow up reminders
+Teleconsultation slot booking with automatic video link generation
+
+2.1.3 Patients
+Online appointment booking without requiring staff assistance
+Digital access to prescriptions, lab reports, and complete health history timeline
+Convenient bill payment via bKash, Nagad, or bank card
+Automated reminders for appointments, follow ups, and medication refills
+
+2.1.4 Lab Technicians & Pharmacists
+Streamlined test result entry with automated critical value flagging and HAS alert triggering
+Digital prescription queue from doctor’s module with inventory auto deduction on dispensing
+Low stock alerts and expiry date tracking for pharmacy inventory management
+
+2.1.5 Emergency & Security Personnel
+One click SOS emergency activation accessible from any portal screen
+Live ambulance GPS tracking and real time dispatch management from the emergency dashboard
+Automated ER pre notification with patient MRN, vitals, and estimated arrival time
+
+
+
+
+2.2 Assumptions and Dependencies
+2.2.1 Assumptions
+All target hospitals have active internet connectivity (broadband or 4G mobile data)
+Hospital administrators own a smartphone and have basic digital literacy
+SSL Wireless, Twilio, bKash, Nagad, and SendGrid APIs will remain commercially available throughout v1.0 lifecycle
+SMS delivery rates in Bangladesh will remain sufficient for OTP, alert, and notification use cases
+Users will primarily access Hospital Management System via browser or PWA; native app is a v2.0 consideration
+Hospital administrators will complete system configuration before clinical staff onboarding
+Multi language Bangla content management beyond UI labels is a v2.0 consideration
+
+2.2.2 Dependencies
+AWS (EKS, RDS PostgreSQL, S3, CloudFront)  primary cloud infrastructure provider
+bKash Merchant API  mobile payment gateway (requires bKash merchant account)
+Nagad Developer API  secondary mobile payment gateway
+Stripe  international card payment gateway for subscription billing
+SendGrid  transactional email delivery
+SSL Wireless / Twilio  SMS OTP, voice calls, and WhatsApp notification delivery
+Pusher with Laravel Echo  WebSocket connections for real time features
+Redis  session management and HAS alert job queuing
+Laravel 11 (PHP 8.2)  backend API framework
+Next.js 14 (React)  frontend PWA framework
+PostgreSQL 16 (AWS RDS)  primary relational database with schema level multi tenancy
+
+3. System Features and Requirements
+3.1 Functional Requirements
+Requirements are stated using EARS format: “When [event], the system shall [response]” and validated with Gherkin BDD scenarios.
+
+3.1.1 Module 1  Hospital Alert System (HAS)
+HAS is the primary differentiator of the Hospital Management System platform. It is a rulebased engine that monitors system events and dispatches alerts through multiple channels.
+
+FR HAS 01 When a lab technician saves a critical lab result, the system shall dispatch a multi channel alert to the ordering doctor and patient within 60 seconds.
+
+FR HAS 02  When a Hospital Admin configures an alert threshold rule, the system shall apply the rule to all new results immediately without developer intervention.
+
+FR HAS 03  When a ward’s bed occupancy reaches the configured threshold (default: 90%), the system shall trigger an alert to the Hospital Director and Admin via email and SMS within 60 seconds.
+
+FR HAS 04  When an appointment is confirmed, the system shall send automated reminder alerts to the patient 24 hours and 2 hours before the scheduled time.
+
+FR HAS 05  When a doctor sets a patient follow up reminder, the system shall automatically alert the patient at the configured date via SMS.
+
+FR HAS 06  When a primary SMS gateway (SSL Wireless) fails, the system shall automatically retry using the secondary gateway (Twilio) within 30 seconds.
+
+Scenario: SMS gateway failover
+   Given SSL Wireless returns a failure response for an alert dispatch
+   When the failure is detected
+   Then the system shall retry delivery via Twilio within 30 seconds and log the failover attempt
+
+3.1.2 Module 2  Patient Profile & Registration
+FR PAT 01  When a new patient registers, the system shall generate a unique Medical Record Number (MRN) in format HAX XXXXX and send an SMS confirmation within 30 seconds.
+
+Scenario: Patient self registration
+   Given a new patient submits the registration form with valid details
+   When OTP verification is completed
+   Then the system shall generate a unique MRN, create the patient profile, and send an SMS confirmation within 30 seconds
+
+FR PAT 02  When a patient profile is created, the system shall store: full name, date of birth, NID number, gender, blood group, phone, email, emergency contacts, and profile photo, with NID uniqueness enforced.
+
+FR PAT 03  When a receptionist registers a walk in patient, the system shall allow on behalf registration and send the patient an SMS confirmation.
+
+FR PAT 04  When a guardian account is linked to patient profiles, the system shall allow one guardian to manage up to 10 linked profiles, each with an independent MRN.
+
+FR PAT 05  When a patient views their health history timeline, the system shall display all visits, diagnoses, prescriptions, lab results, and reports in reverse chronological order within 2 seconds.
+
+3.1.3 Module 3  Appointment & Scheduling Management
+FR APT 01  When a patient books an appointment online, the system shall display real time doctor availability, prevent double booking, and send an SMS confirmation within 60 seconds.
+
+Scenario: Online appointment booking
+   Given a patient selects a doctor, date, and available time slot
+   When the booking is confirmed
+   Then the slot shall be locked immediately, the appointment saved, and an SMS confirmation sent to the patient within 60 seconds
+
+FR APT 02  When a doctor defines their schedule, the system shall allow configuration of available hours, break times, and appointment duration per specialty, displaying only configured slots to patients.
+
+FR APT 03  When a receptionist cancels or reschedules an appointment, the system shall record the action, notify the patient via SMS, and release the slot immediately.
+
+FR APT 04  When a teleconsultation slot is booked, the system shall automatically generate a browser video link and deliver it to both patient and doctor via SMS and email.
+
+3.1.4 Module 4  Digital Prescription Management
+FR PRE 01  When a doctor generates a digital prescription, the system shall capture diagnosis, drug name, dosage, frequency, duration, and special instructions, apply the doctor’s e signature, and forward it to the pharmacy module within 5 seconds.
+
+Scenario: Prescription creation and pharmacy forwarding
+   Given a doctor completes and saves a prescription
+   When the prescription is signed
+   Then the prescription shall appear in the pharmacy queue within 5 seconds and the patient shall receive a PDF copy via SMS link within 60 seconds
+
+FR PRE 02  When a new medicine is added to a prescription, the system shall automatically check for drug drug interactions and display a warning within 2 seconds; the doctor must acknowledge before proceeding.
+
+FR PRE 03  When a prescription is saved, the system shall store a hash of the prescription content; any post save modification shall invalidate the digital signature.
+
+FR PRE 04  When a doctor searches the drug database, the system shall return results including generic name, brand name, dosage, and contraindications within 1 second from a database of at least 5,000 entries.
+
+3.1.5 Module 5  Lab Test Management
+FR LAB 01  When a lab technician saves a test result, the system shall automatically flag abnormal values (Red for Critical, Amber for Borderline) and trigger an HAS alert to the ordering doctor and patient within 60 seconds.
+
+Scenario: Lab result with critical value
+   Given a lab technician enters a result value exceeding the Critical threshold
+   When the result is saved
+   Then the result shall be flagged Red, an HAS alert dispatched to the doctor and patient within 60 seconds, and the report added to the patient’s health history timeline within 30 seconds
+
+FR LAB 02  When a lab report is generated, the system shall produce a professional PDF within 10 seconds including hospital branding, technician name, reference ranges, and abnormal value flags.
+
+FR LAB 03  When a Lab Admin configures reference ranges, the system shall allow configuration per test type, age group, and gender, applying flags dynamically based on patient demographics.
+
+3.1.6 Module 6  Medicine & Pharmacy Management
+FR PHM 01  When a doctor saves a prescription, the system shall automatically add it to the pharmacy dispensing queue within 5 seconds, displaying patient name, MRN, and prescribed drugs.
+
+FR PHM 02  When medicine is dispensed to a patient, the system shall automatically deduct the dispensed quantity from inventory within 2 seconds and create a timestamped audit log entry.
+
+Scenario: Medicine dispensing and inventory deduction
+   Given a pharmacist dispenses 2 units of a drug from a prescription
+   When the dispense action is confirmed
+   Then inventory shall decrease by 2 units, a log entry created with pharmacist ID, timestamp, and patient MRN
+
+FR PHM 03  When any drug’s stock falls below the configured minimum threshold, the system shall display a low stock alert on the pharmacy dashboard.
+
+FR PHM 04  When a drug is out of stock, the pharmacist shall be able to log partial dispensing with a note; the patient shall be notified and the outstanding quantity tracked.
+
+3.1.7 Module 7  Emergency & Ambulance Service
+FR EMR 01  When a patient activates the SOS emergency button (accessible within 2 clicks from any screen), the system shall alert the hospital emergency dispatcher with patient name, MRN, phone, and last known location within 30 seconds.
+
+Scenario: SOS emergency activation
+   Given a patient presses the SOS button on the patient portal
+   When the SOS flow activates
+   Then the dispatcher shall receive an alert within 30 seconds and the emergency dashboard shall show the new request
+
+FR EMR 02  When a dispatcher assigns an ambulance, the system shall enable real time GPS tracking of the dispatched ambulance visible to the patient/family and the ER team, with location updates every 10 seconds.
+
+FR EMR 03  When an ambulance is dispatched, the system shall send the ER team a pre notification alert including patient MRN, last known vitals, known allergies, and estimated arrival time before the ambulance arrives.
+
+3.1.8 Module 8  Bed & Ward Management
+FR BED 01  When a bed assignment or release occurs, the system shall update the real time digital ward map showing all bed statuses (Available / Occupied / Reserved / Under Maintenance) within 5 seconds.
+
+Scenario: Bed assignment on patient admission
+   Given a receptionist assigns Bed B 204 to an admitted patient
+   When the assignment is saved
+   Then bed B 204 status shall change to ‘Occupied’ on the ward map within 5 seconds, recording admission date, admitting doctor, and expected discharge date
+
+FR BED 02  When any ward reaches the configured capacity threshold (default: 90%), the system shall trigger an HAS alert to the Hospital Director within 60 seconds.
+
+3.1.9 Module 9  OPD & IPD Management
+FR OPD 01  When a patient’s status transitions (Registration → OPD → IPD Admitted → Discharged), the system shall record the change with a timestamp and the actor’s user ID.
+
+FR OPD 02  When an IPD patient’s nurse records vitals (temperature, blood pressure, pulse, oxygen saturation), the system shall store the entry with a timestamp and display a graphical trend on the patient care chart.
+
+FR OPD 03  When a patient is discharged, the system shall auto generate a discharge summary PDF within 10 seconds containing diagnosis, treatment, prescriptions, and follow up instructions, and add it to the health history timeline.
+
+3.1.10 Module 10  Billing & Finance
+FR BIL 01  When a billing session is opened for a patient, the system shall automatically aggregate all charges (doctor fee, lab fees, medicine cost, bed rental, procedure fees) into a single itemized bill within 3 seconds.
+
+Scenario: Automated bill aggregation
+   Given a patient with completed OPD consultation, 2 lab tests, and 3 dispensed medicines
+   When the receptionist opens the billing screen
+   Then all line items shall be auto populated within 3 seconds with accurate fees for each service
+
+FR BIL 02  When a patient completes payment via bKash, Nagad, Stripe, or cash, the system shall record the transaction, update bill status, and generate a PDF receipt within 5 seconds.
+
+FR BIL 03  When a partial payment is recorded, the system shall log the amount paid and display the remaining outstanding balance on the patient billing screen.
+
+FR BIL 04  When an authorized Hospital Admin applies a discount to a bill, the system shall record the discount with an audit log entry; unauthorized roles shall not be able to apply discounts.
+
+3.1.11 Module 11  Doctor & Staff Management
+FR STF 01  When a Hospital Admin creates a staff account, the system shall enforce the configured RBAC role, restricting the user to only the modules and data permitted for their role.
+
+Scenario: Tenant cannot access admin billing management
+   Given a logged in Nurse user
+   When they attempt to navigate to the Billing Management module
+   Then the system shall display an ‘Access Denied’ error and log the attempt
+
+FR STF 02  When a staff member fails authentication 5 consecutive times, the system shall lock the account for 15 minutes and notify the registered email.
+
+FR STF 03  When a Hospital Admin views the doctor performance dashboard, the system shall display total patients seen, total revenue generated, and average appointment duration, exportable as CSV.
+
+3.1.12 Module 12  Multi Tenant Architecture & SaaS Admin Panel
+FR TNT 01  When a tenant is provisioned, the system shall enforce complete data isolation at the database row level security (RLS) layer, preventing any cross tenant data access.
+
+Scenario: Cross tenant data isolation
+   Given Hospital A and Hospital B are separate tenants
+   When a Hospital A admin queries patient records
+   Then the system shall return only Hospital A’s records; Hospital B data shall never be accessible
+
+FR TNT 02  When a tenant is created, the system shall provision a unique subdomain (format: hospitalname.Hospital Management System.com.bd) with configurable branding including logo and hospital name.
+
+FR TNT 03  When a tenant’s payment is 7 days overdue, the system shall automatically suspend their access while retaining data for 30 days before deletion, offering a data export during the grace period.
+
+FR TNT 04  When an invoice remains unpaid 7 days past its due date, the system shall send a payment reminder notification to the Hospital Admin and flag the subscription as overdue in the SaaS Admin Panel.
+
+3.1.13 Module 13  Analytics & Reporting Dashboard
+FR ANL 01  When a Hospital Admin views the analytics dashboard, the system shall display total revenue, total patients, top doctors by patient count, and most ordered lab tests, loadable within 3 seconds and filterable by date range.
+
+FR ANL 02  When an Admin requests a report export, the system shall generate the file in CSV or PDF format within 10 seconds for reports up to 10,000 rows.
+
+FR ANL 03  When a pharmaceutical company accesses the pharma portal, the system shall display only anonymized, aggregated prescription data (drug totals by doctor); patient name, NID, and MRN shall never be visible.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3.2 Non Functional Requirements
+3.2.1 Performance Requirements
+NFR ID
+Requirement
+Target Metric
+NFR PERF 01
+API response time  95th percentile under normal load
+< 300 ms (load tested with k6)
+NFR PERF 02
+Web portal initial page load (F irst Contentful Paint)
+< 2 seconds (Lighthouse audit)
+NFR PERF 03
+HAS alert dispatch time from triggering event
+< 60 seconds (end to end automated test)
+NFR PERF 04
+PDF generation for lab reports and bills
+< 10 seconds
+NFR PERF 05
+Database query response time  95th percentile
+< 100 ms (database query monitoring)
+NFR PERF 06
+WebSocket connection establishment time
+< 1 second
+NFR PERF 07
+System concurrent user support
+10,000 concurrent users without degradation
+NFR PERF 08
+Auto scaling trigger on CPU utilization
+New instance provisioned within 3 minutes at 70% CPU
+
+3.2.2 Security Requirements
+NFR ID
+Requirement
+Standard / Control
+NFR SEC 01
+Only authenticated users shall access any system module
+JWT token based auth (Laravel Sanctum); session expiry after 30 minutes of inactivity
+NFR SEC 02
+Two Factor Authentication mandatory for Hospital Admin and above
+TOTP via Google Authenticator or SMS OTP
+NFR SEC 03
+All data in transit shall be encrypted
+TLS 1.3 minimum; HTTPS enforced on all endpoints
+NFR SEC 04
+All sensitive data at rest shall be encrypted
+AES 256 on PostgreSQL and AWS S3 (SSE AES256)
+NFR SEC 05
+Password storage shall use industry standard hashing
+bcrypt with minimum cost factor of 12; ≥8 chars, ≥1 uppercase, number, special char
+NFR SEC 06
+Every system action shall be logged in a tamper evident audit trail
+User ID, role, timestamp, IP address, action, record ID; retained 5 years
+NFR SEC 07
+Multi tenant data isolation enforced at database layer
+PostgreSQL Row Level Security (RLS) policies; penetration tested
+NFR SEC 08
+OTP based verification for registration and account recovery
+6 digit OTP via SMS; valid for 5 minutes; one time use
+NFR SEC 09
+Payment data shall not be stored on Hospital Management System servers
+Tokenized via gateway; PCI DSS scope excluded from Hospital Management System servers
+NFR SEC 10
+OWASP Top 10 vulnerabilities addressed before launch
+OWASP ZAP scan + manual testing; no Critical/High findings at launch
+
+3.2.3 Usability Requirements
+The system shall achieve a System Usability Scale (SUS) score of 70 or above in user testing with non technical users (receptionists, nurses, patients).
+A new receptionist must be able to complete patient registration in under 5 minutes after reading the documentation, without additional training.
+All core workflows (register patient, book appointment, dispense medicine, pay bill) shall be completable in under 3 minutes by a first time user.
+The platform shall be fully responsive and functional on screen widths from 320px (mobile) to 2560px (large desktop).
+All interactive elements must be keyboard navigable and meet WCAG 2.1 Level AA accessibility standards.
+Error messages shall be written in plain language (not technical codes) with a suggested corrective action.
+
+3.2.4 Reliability Requirements
+The system shall maintain 99.9% uptime SLA (excluding planned maintenance windows), measured monthly, equivalent to < 44 minutes unplanned downtime per month.
+HAS alert delivery success rate shall be at or above 99.5% of all dispatched alerts.
+Recovery Time Objective (RTO): system restoration after failure within 1 hour.
+Recovery Point Objective (RPO): maximum data loss window of 4 hours.
+In the event of a payment gateway outage, the system shall display a user friendly error and queue the failed transaction for retry, without double charging the user.
+The system shall perform automated database backups every 4 hours, retained with point in time recovery for 7 days.
+
+3.2.5 Compliance Requirements
+The system shall comply with Bangladesh Digital Security Act (DSA) 2018 requirements for data handling, user consent, and breach notification to CIRT Bangladesh within 72 hours of discovery.
+All financial transaction records shall be retained for a minimum of 7 years in accordance with Bangladesh National Board of Revenue (NBR) requirements.
+bKash and Nagad API integrations shall comply with Bangladesh Bank Mobile Financial Services (MFS) regulations and merchant onboarding requirements.
+BMDC (Bangladesh Medical and Dental Council) doctor registration numbers shall be validated at staff onboarding.
+The system architecture shall be designed to be HIPAA ready with appropriate access controls, encryption, and audit trails.
+Patient health data shall be stored on servers within Bangladesh or in a jurisdiction with equivalent data protection standards.
+
+3.3 External Interface Requirements
+3.3.1 User Interfaces
+Web Application (Next.js 14 PWA): Responsive SPA with role specific dashboards for Hospital Admin, Doctor, Nurse, Lab Technician, Pharmacist, Receptionist, and Patient
+Progressive Web App Support: ‘Add to Home Screen’ installable on iOS and Android without App Store installation
+Mobile Browser Support: Fully functional on Chrome for Android and Safari for iOS from 320px screen width
+Admin Dashboard: Sidebar navigation with KPI widgets, ward occupancy map, real time alert feed, and financial summary
+Patient Portal: Simplified view with health history timeline, appointment booking, bill payment, and lab reports in English and Bangla
+Emergency Dashboard: Real time ambulance map with GPS tracking, dispatch assignment, and SOS request queue
+
+3.3.2 Hardware Interfaces
+No dedicated hardware is required. The system operates on standard internet connected devices (smartphones, tablets, laptops).
+GPS tracking for ambulances is implemented via the driver’s phone browser Geolocation API  no hardware GPS unit required.
+Standard barcode scanners for pharmacy barcoding are supported if available at the hospital.
+Future consideration (v2.0): Integration with IoT devices, IP cameras, and smart bed sensors  TBD.
+
+3.3.3 Software Interfaces
+External System
+Interface Type
+Purpose
+Protocol
+bKash Merchant API
+REST API
+Mobile payment processing for patient bills
+HTTPS / JSON
+Nagad Developer API
+REST API
+Secondary mobile payment gateway
+HTTPS / JSON
+Stripe
+REST API
+Card based subscription billing (international)
+HTTPS / JSON
+SendGrid
+REST API
+Transactional email: reports, invoices, notifications
+HTTPS / SMTP
+SSL Wireless (Primary SMS)
+REST API
+SMS OTP, appointment reminders, lab alerts
+HTTPS / JSON
+Twilio (Failover / Voice)
+REST API
+Fallback SMS, voice IVR, WhatsApp Business alerts
+HTTPS / JSON
+Pusher / Laravel Echo
+WebSocket
+Real time alerts, bed status, ambulance GPS
+WebSocket / HTTPS
+AWS S3 / Wasabi
+SDK / REST
+Lab report PDFs, prescription PDFs, patient photos
+HTTPS
+AWS CloudFront
+CDN
+Static asset delivery and PWA hosting
+HTTPS
+AWS RDS (PostgreSQL 16)
+TCP/IP
+Primary relational database
+PostgreSQL protocol
+
+3.3.4 Communications Interfaces
+All client server communication shall use HTTPS with TLS 1.3 minimum.
+RESTful JSON API between Next.js frontend and Laravel 11 backend; all API endpoints versioned at /api/v1/.
+WebSocket connections (Pusher/Laravel Echo) for real time features; falls back to long polling if WebSocket’s are unavailable.
+API responses shall use JSON format with UTF 8 encoding to support Bangla Unicode characters.
+Email delivery via SendGrid with SPF, DKIM, and DMARC configured for Hospital Management System.com.bd domain.
+
+3.4 System Features  Feature Matrix by Plan
+Feature
+Starter
+Professional
+Business
+Enterprise
+Patient Registration & MRN
+Up to 500 patients
+Up to 2,000 patients
+Up to 10,000 patients
+Unlimited
+Appointment & Scheduling
+Full
+Full
+Full
+Full
+Digital Prescriptions
+Full
+Full
+Full
+Full
+Lab Test Management
+Full
+Full
+Full
+Full
+Pharmacy & Dispensing
+Full
+Full
+Full
+Full
+Bed & Ward Management
+
+Up to 50 beds
+Up to 300 beds
+Unlimited
+Hospital Alert System (HAS)
+SMS + Email
+SMS + Email + WhatsApp
+All channels
+All channels + API
+Emergency & Ambulance
+
+
+Full
+Full
+Analytics & Reporting
+Basic
+Advanced
+Full + CSV/PDF
+Custom BI
+Teleconsultation
+
+Add on
+Full
+Full
+Multi Branch Dashboard
+
+
+Up to 3 branches
+Unlimited
+Pharma Company Portal
+
+
+
+Available
+White Label Option
+
+
+
+Available
+AI Powered Features (v2.0)
+
+Add on
+Add on
+Included
+SLA Response Time
+48 hours
+24 hours
+12 hours
+4 hours
+
+4. Other Requirements
+
+4.1 Database Requirements
+Primary database: PostgreSQL 16 hosted on AWS RDS with Multi AZ deployment and schema level multi tenancy.
+Row Level Security (RLS) policies enforced at the PostgreSQL layer for complete tenant data isolation; penetration tested before launch.
+Database schema shall enforce foreign key constraints, indexed lookups on patient_id, tenant_id, appointment_id, lab_id, and invoice_id fields.
+Automated database backups every 4 hours, stored in AWS S3 with versioning enabled; point in time recovery enabled for up to 7 days of rollback.
+Database connections shall use connection pooling (maximum 100 connections per instance).
+All patient health records and financial transaction records shall be stored in append only tables with no update or delete permissions at application level.
+
+4.1.1 Core Entity Relationships (Summary)
+Entity
+Key Attributes
+Relationships
+Tenant (Hospital)
+tenant_id, name, subdomain, plan, status, created_at
+Has many Users, Patients, Appointments, Beds, Alerts
+Patient
+patient_id, mrn, tenant_id, name, dob, nid, blood_group, phone, email
+Belongs to Tenant; has many Appointments, Prescriptions, LabTests
+User (Staff)
+user_id, tenant_id, role, name, email, phone, status
+Belongs to Tenant; has one Role; role scoped access
+Appointment
+appt_id, tenant_id, patient_id, doctor_id, slot_datetime, status
+Belongs to Patient and Doctor; triggers HAS alerts
+Prescription
+rx_id, appt_id, patient_id, doctor_id, drugs[], diagnosis, signed_at
+Belongs to Appointment; forwarded to Pharmacy queue
+LabTest
+lab_id, patient_id, technician_id, test_type, result_value, flag, report_url
+Belongs to Patient; triggers HAS on Critical flag
+Bed
+bed_id, tenant_id, ward_id, bed_number, status, patient_id
+Belongs to Ward; assigned to Patient during IPD
+Bill
+bill_id, patient_id, tenant_id, line_items[], total, paid, status
+Belongs to Patient; aggregates all service charges
+Alert
+alert_id, trigger_type, recipient_id, channels[], status, sent_at, ack_at
+Belongs to Tenant; logs all HAS dispatch attempts
+AuditLog
+log_id, tenant_id, user_id, action, record_id, ip_address, created_at
+Immutable; linked to all major system actions
+
+4.2 Legal and Regulatory Requirements
+Bangladesh Digital Security Act (DSA) 2018: User data shall not be sold or shared with third parties without explicit consent. Data breach notification to CIRT Bangladesh within 72 hours of discovery.
+National Board of Revenue (NBR) Compliance: All financial transaction records and receipts shall be retained for a minimum of 7 years and be exportable for tax audit purposes.
+Bangladesh Bank Payment Guidelines: bKash and Nagad integrations shall comply with Bangladesh Bank’s Mobile Financial Services (MFS) regulations and merchant onboarding requirements.
+BMDC Compliance: Doctor BMDC registration numbers shall be validated at staff account creation; prescriptions shall carry the BMDC number of the prescribing doctor.
+HIPAA Readiness: Although Bangladesh does not mandate HIPAA, Hospital Management System shall implement HIPAA aligned access controls, encryption, and audit trails as best practice for future regional expansion.
+GDPR Adjacent Provisions: Hospital Management System shall implement right to erasure requests, data export capability, and clear privacy policy as best practice for future regional expansion.
+
+4.3 Internationalization and Localization
+v1.0 Language Support: English UI with Bangladeshi Taka (BDT) currency formatting throughout; patient portal supports Bangla (Unicode) via language toggle.
+Date Format: DD/MM/YYYY consistent with Bangladesh convention.
+Phone Number Format: +880 Bangladesh country code support for all OTP, SMS, and voice notification functions.
+Bangla Language (v2.0 Roadmap): Full Bangla content management for clinical modules and reports  architecture shall use i18n ready string externalization from v1.0 to support this without rework.
+Timezone: Asia/Dhaka (UTC+6) as system default; all timestamps stored in UTC and displayed in local time.
+
+
+
+
+
+
+
+
+
+
+4.4 Risk Management  FMEA Matrix
+Risk ID
+Failure Mode
+Effect
+Sev.
+Prob.
+RPN
+Mitigation Strategy
+R 01
+Payment gateway downtime (bKash/Nagad)
+Patients unable to pay bills; revenue loss
+8
+4
+32
+Multi gateway fallback (Stripe); user facing retry; offline payment recording
+R 02
+Database failure / data loss
+Loss of patient and financial records; system unavailability
+10
+2
+20
+AWS RDS Multi AZ; 4 hour automated backups; 7 day point in time recovery
+R 03
+Unauthorized data access (breach)
+PII and health data exposure; legal liability; HIPAA/DSA violation
+10
+2
+20
+RLS enforcement; AES 256 encryption; audit logging; pre launch pen test
+R 04
+SMS gateway failure
+OTP delivery failure; HAS alert non delivery; users locked out
+8
+4
+32
+Dual SMS provider (SSL Wireless + Twilio); email OTP fallback; alert retry queue
+R 05
+HAS alert non delivery
+Critical lab result missed; patient/doctor not notified; clinical risk
+10
+3
+30
+Multi channel dispatch; escalation chains; delivery logging; ≥99.5% SLA target
+R 06
+Cross tenant data leakage
+Hospital A sees Hospital B patient data; regulatory violation
+9
+2
+18
+PostgreSQL RLS on all queries; integration tests for cross tenant isolation
+R 07
+Slow performance under load
+Poor user experience; clinical workflow delays; churn risk
+7
+4
+28
+AWS EKS Auto Scaling; Redis caching; CDN; query optimization; k6 load testing
+R 08
+Drug interaction check failure
+Doctor prescribes contraindicated drugs; patient safety risk
+10
+3
+30
+Drug database validation; mandatory acknowledgement workflow; database update schedule
+R 09
+Regulatory non compliance (NBR/DSA/BMDC)
+Fines; license revocation; operational shutdown
+10
+2
+20
+Legal counsel review; 7 year data retention; breach notification protocol; BMDC validation
+R 10
+Key developer departure
+Development stall; knowledge loss; timeline risk
+7
+3
+21
+Code documentation standards; Git version control; knowledge sharing sessions
+
+RPN: Risk Priority Number = Severity × Probability. RPN ≥ 30 requires immediate mitigation before launch.
+
+5. Appendices
+
+5.1 Glossary
+Term
+Definition
+Patient
+A registered individual with a unique MRN who receives healthcare services through the system
+MRN
+Medical Record Number  unique patient identifier in format HAX XXXXX, generated at registration
+Tenant
+A hospital, clinic, or diagnostic center with its own isolated data environment and subdomain on Hospital Management System
+Hospital Admin
+The primary Hospital Management System account holder for a hospital  manages users, configuration, and billing
+Doctor
+A licensed medical professional using consultation, prescription, and clinical modules
+Lab Technician
+Clinical staff responsible for processing samples and entering lab results in the system
+Pharmacist
+Staff managing medicine dispensing, inventory, and pharmacy queue
+Receptionist
+Front desk staff handling patient registration, appointment booking, and walk in management
+HAS
+Hospital Alert System  the rule based engine monitoring system events and dispatching multi channel alerts
+Critical Flag
+Red visual indicator applied to lab results exceeding the critical threshold; triggers immediate HAS alert
+Borderline Flag
+Amber visual indicator applied to lab results in the abnormal but not critical range
+Escalation Chain
+Configured sequence of recipients to be notified if the primary recipient does not acknowledge an alert within N minutes
+Discharge Summary
+Auto generated PDF containing diagnosis, treatment, prescriptions, and follow up instructions upon patient discharge
+Plan Tier
+Subscription level (Starter / Professional / Business / Enterprise) governing feature and capacity access
+White Label
+Enterprise option allowing a hospital group to rebrand Hospital Management System as their proprietary platform
+bKash / Nagad
+Bangladesh’s dominant mobile financial services (MFS) used for digital bill payments
+BMDC Number
+Bangladesh Medical and Dental Council registration number  mandatory for licensed doctors
+PWA
+Progressive Web App  installable on any device from the browser without App Store requirements
+
+5.2 Use Cases and Diagrams
+5.2.1 Primary Use Case Summary
+UC ID
+Use Case Name
+Primary Actor
+Trigger
+Pre condition
+Post condition
+UC 01
+Register Hospital Tenant
+Hospital Management System Admin
+Hospital subscribes to Hospital Management System
+Subscription payment received
+Tenant provisioned; subdomain active; Admin dashboard live
+UC 02
+Register Patient
+Receptionist / Patient
+Walk in or online self registration
+Tenant account active
+Patient profile created with unique MRN; SMS confirmation sent
+UC 03
+Book Appointment
+Patient / Receptionist
+Patient selects doctor and slot
+Doctor schedule configured; slot available
+Appointment confirmed; SMS sent; HAS reminder scheduled
+UC 04
+Generate Prescription
+Doctor
+Doctor completes consultation
+Patient in active appointment
+Prescription signed; pharmacy queue updated; PDF sent to patient
+UC 05
+Enter Lab Result & Alert
+Lab Technician
+Sample processed; result ready
+Lab test booking exists
+Result saved; abnormal flags applied; HAS alert dispatched
+UC 06
+Dispense Medicine
+Pharmacist
+Prescription appears in pharmacy queue
+Prescription saved by doctor
+Medicines dispensed; inventory updated; audit log created
+UC 07
+SOS Emergency
+Patient
+Patient activates SOS button
+Patient is logged in
+Dispatcher alerted; ambulance assigned; GPS tracking active; ER pre notified
+UC 08
+Admit & Assign Bed
+Receptionist
+Doctor orders IPD admission
+Bed available in target ward
+Patient admitted; bed status = Occupied; care chart created
+UC 09
+Generate & Pay Bill
+Receptionist / Patient
+Patient ready for discharge or payment
+All services logged in system
+Bill aggregated; payment processed; PDF receipt generated
+UC 10
+Publish Alert / Announcement
+Hospital Admin
+Admin publishes hospital wide notice
+Admin is authenticated
+All registered users notified via email and in app within 5 minutes
+
+
+5.2.2 System Architecture Overview
+Hospital Management System HMS follows a cloud native, containerized three tier architecture:
+Presentation Layer: Next.js 14 PWA hosted on AWS CloudFront CDN  serves responsive web dashboards for all eight user roles; installable as PWA on any device
+Application Layer: Laravel 11 REST API running on AWS EKS (Kubernetes with Docker containers)  handles all business logic, RBAC, HAS alert engine, and third party integrations; auto scales at 70% CPU utilization
+Data Layer: AWS RDS PostgreSQL 16 (Multi AZ) for relational data with Row Level Security; AWS S3 / Wasabi for PDF reports, prescription documents, and patient photos; Redis for session management and HAS alert job queuing
+
+External integrations communicate outbound from the Application Layer via HTTPS to bKash API, Nagad API, Stripe, SendGrid, SSL Wireless, Twilio, and Pusher. All inbound traffic is routed through AWS Application Load Balancer with WAF enabled. WebSocket connections (Pusher/Laravel Echo) provide real time updates for alert delivery, bed status, and GPS tracking.
+
+5.3 To Be Determined (TBD) List
+TBD ID
+Item
+Owner
+Target Resolution Date
+TBD 01
+Full Bangla language UI translation strings, typography specifications, and right to left layout considerations
+Product Team
+v2.0 (Q4 2026)
+TBD 02
+Native iOS and Android mobile app specification and feature parity with PWA
+Product Team
+v2.0 (Q3 2026)
+TBD 03
+AI/ML powered clinical decision support  model selection, training data, and BMDC regulatory clearance
+Engineering Lead
+v2.0 (Q4 2026)
+TBD 04
+IoT / smart bed sensor and IP camera integration protocol and hardware vendor selection
+CTO
+v3.0 (2027)
+TBD 05
+White label customization scope: branding depth, custom domain, separate tenant instance architecture
+Product + Legal
+Before first Enterprise sale
+TBD 06
+GDPR equivalent compliance framework for future India / Southeast Asia regional expansion
+Legal Counsel
+Pre regional expansion
+TBD 07
+Detailed disaster recovery (DR) runbook: RTO/RPO targets, failover procedures, and DR drill schedule
+Engineering Lead
+Pre launch (Q2 2026)
+TBD 08
+Third party penetration testing vendor selection and OWASP/HIPAA testing schedule
+Security Team
+Pre launch (Q2 2026)
+TBD 09
+Pharmaceutical Company Portal: data sharing agreement template, anonymization audit, and pricing model
+Product + Legal
+v1.1 (Q3 2026)
+TBD 10
+Multi country payment gateway evaluation (India UPI, Southeast Asia GrabPay) for regional expansion
+Business Dev
+Regional expansion phase
+
+
+
