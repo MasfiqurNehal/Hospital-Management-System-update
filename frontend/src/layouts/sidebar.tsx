@@ -70,6 +70,8 @@ export function Sidebar({ collapsed, onToggle, onNavigate }: SidebarProps) {
       </div>
 
       {/* Nav groups */}
+      {/* Testing */}
+
       <nav className="flex-1 space-y-5 overflow-y-auto scrollbar-slim px-3 py-4">
         {groups.map((group, gi) => (
           <div key={gi}>
@@ -113,8 +115,8 @@ export function Sidebar({ collapsed, onToggle, onNavigate }: SidebarProps) {
                                 active
                                   ? 'bg-white/20 text-white'
                                   : item.highlight
-                                  ? 'bg-destructive text-destructive-foreground'
-                                  : 'bg-secondary text-secondary-foreground',
+                                    ? 'bg-destructive text-destructive-foreground'
+                                    : 'bg-secondary text-secondary-foreground',
                               )}
                             >
                               {item.badge}
