@@ -472,7 +472,10 @@ class HmsApiController extends Controller
         $tenantId = $patient->tenant_id ?: ($doctor->tenant_id ?: (DB::table('tenants')->value('id') ?? 'tenant-001'));
         $createdAt = now();
 
-        DB::transaction(function () use ($id, $appointmentNumber, $resolvedPatientId, $patient, $doctor, $data, $scheduledAt, $duration, $tenantId, $createdAt): void {
+        $consultationFee = $this->extractConsultationFeeBdt($doctor->doctor_profile ?? null);
+        $feeBdt = $consultationFee > 0 ? $consultationFee : 0.0;
+
+        DB::transaction(function () use ($id, $appointmentNumber, $resolvedPatientId, $patient, $doctor, $data, $scheduledAt, $duration, $tenantId, $createdAt, $feeBdt): void {
             DB::table('appointments')->insert([
                 'id' => $id,
                 'tenant_id' => $tenantId,
@@ -487,7 +490,7 @@ class HmsApiController extends Controller
                 'duration_minutes' => $duration,
                 'reason' => trim((string) $data['reason']),
                 'notes' => isset($data['notes']) ? trim((string) $data['notes']) : null,
-                'fee_bdt' => 0,
+                'fee_bdt' => $feeBdt,
                 'payment_status' => 'pending',
                 'reminder_24h_sent' => false,
                 'reminder_2h_sent' => false,
@@ -1123,6 +1126,16 @@ class HmsApiController extends Controller
     private function mapAppointment(object $row): array
     {
         $doctorProfile = $this->decodeJson($row->doctor_profile ?? null);
+        if (is_string($doctorProfile)) {
+            $doctorProfile = $this->decodeJson($doctorProfile);
+        }
+        $resolvedFee = (float) $row->fee_bdt;
+        if ($resolvedFee <= 0) {
+            $doctorFee = $this->extractConsultationFeeBdt($doctorProfile);
+            if ($doctorFee > 0) {
+                $resolvedFee = $doctorFee;
+            }
+        }
         return [
             'id' => $row->id,
             'tenant_id' => $row->tenant_id,
@@ -1148,7 +1161,7 @@ class HmsApiController extends Controller
             'cancelled_at' => $this->iso($row->cancelled_at),
             'cancellation_reason' => $row->cancellation_reason,
             'cancelled_by' => $row->cancelled_by ? (string) $row->cancelled_by : null,
-            'fee_bdt' => (float) $row->fee_bdt,
+            'fee_bdt' => $resolvedFee,
             'payment_status' => $row->payment_status,
             'video_link' => $row->video_link,
             'video_room_id' => $row->video_room_id,
@@ -1584,11 +1597,12 @@ class HmsApiController extends Controller
     public function appointmentPayDirect(Request $request, string $id): JsonResponse
     {
         $data = $request->validate([
-            'card_number' => ['required', 'string'],
+            'card_number' => ['nullable', 'string'],
             'exp_month'   => ['nullable', 'integer'],
             'exp_year'    => ['nullable', 'integer'],
             'cvc'         => ['nullable', 'string'],
             'card_name'   => ['nullable', 'string', 'max:128'],
+            'payment_method_id' => ['nullable', 'string'],
         ]);
 
         $appointment = DB::table('appointments')->where('id', $id)->first();
@@ -1598,10 +1612,17 @@ class HmsApiController extends Controller
         if ($appointment->payment_status === 'paid') {
             return $this->error('This appointment fee has already been paid.', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+        if ($appointment->payment_status === 'paid') {
+            return $this->error('This appointment fee has already been paid.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
-        $feeBdt      = (float) $appointment->fee_bdt;
-        $amountCents = max(50, (int) round(($feeBdt / 110) * 100));
-        $stripeKey   = config('services.stripe.secret');
+        $feeBdt      = $this->resolveAppointmentFeeBdt($appointment);
+        if ($feeBdt <= 0) {
+            return $this->error('This appointment has no fee to collect.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        $amountCents = $this->bdtToMinorUnits($feeBdt);
+        $stripeKey   = $this->stripeSecretKey();
+        $currency    = $this->stripeCurrency();
 
         if (! $stripeKey) {
             return $this->error('Stripe is not configured on this server.', Response::HTTP_SERVICE_UNAVAILABLE);
@@ -1610,22 +1631,23 @@ class HmsApiController extends Controller
         try {
             \Stripe\Stripe::setApiKey($stripeKey);
 
-            // Map test card numbers to Stripe's built-in test payment method tokens.
-            // This avoids the raw card data API restriction while still creating
-            // real transactions visible in the Stripe sandbox dashboard.
-            $testTokenMap = [
-                '4242424242424242' => 'pm_card_visa',
-                '5555555555554444' => 'pm_card_mastercard',
-                '4000056655665556' => 'pm_card_visa_debit',
-                '4000000000000002' => 'pm_card_chargeDeclined',
-            ];
-            $rawNumber = preg_replace('/\s+/', '', $data['card_number']);
-            $pmToken   = $testTokenMap[$rawNumber] ?? 'pm_card_visa';
+            $paymentMethodId = isset($data['payment_method_id']) ? trim((string) $data['payment_method_id']) : '';
+            if ($paymentMethodId === '') {
+                $rawNumber = preg_replace('/\s+/', '', (string) ($data['card_number'] ?? ''));
+                $pmToken = $this->resolveTestPaymentMethodToken($rawNumber);
+                if (! $pmToken) {
+                    return $this->error(
+                        'Raw card entry is only supported with Stripe test cards in test mode. Use Stripe Elements for live payments.',
+                        Response::HTTP_UNPROCESSABLE_ENTITY
+                    );
+                }
+                $paymentMethodId = $pmToken;
+            }
 
             $intent = \Stripe\PaymentIntent::create([
                 'amount'               => $amountCents,
-                'currency'             => 'usd',
-                'payment_method'       => $pmToken,
+                'currency'             => $currency,
+                'payment_method'       => $paymentMethodId,
                 'payment_method_types' => ['card'],
                 'confirm'              => true,
                 'description'          => "Appointment {$appointment->appointment_number} — Patient",
@@ -1662,11 +1684,12 @@ class HmsApiController extends Controller
     public function billPayDirect(Request $request, string $id): JsonResponse
     {
         $data = $request->validate([
-            'card_number' => ['required', 'string'],
+            'card_number' => ['nullable', 'string'],
             'exp_month'   => ['nullable', 'integer'],
             'exp_year'    => ['nullable', 'integer'],
             'cvc'         => ['nullable', 'string'],
             'card_name'   => ['nullable', 'string', 'max:128'],
+            'payment_method_id' => ['nullable', 'string'],
         ]);
 
         $bill = DB::table('bills')->where('id', $id)->first();
@@ -1679,8 +1702,9 @@ class HmsApiController extends Controller
             return $this->error('This bill has no outstanding balance.', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $amountCents = max(50, (int) round(($outstanding / 110) * 100));
-        $stripeKey   = config('services.stripe.secret');
+        $amountCents = $this->bdtToMinorUnits($outstanding);
+        $stripeKey   = $this->stripeSecretKey();
+        $currency    = $this->stripeCurrency();
 
         if (! $stripeKey) {
             return $this->error('Stripe is not configured on this server.', Response::HTTP_SERVICE_UNAVAILABLE);
@@ -1689,19 +1713,23 @@ class HmsApiController extends Controller
         try {
             \Stripe\Stripe::setApiKey($stripeKey);
 
-            $testTokenMap = [
-                '4242424242424242' => 'pm_card_visa',
-                '5555555555554444' => 'pm_card_mastercard',
-                '4000056655665556' => 'pm_card_visa_debit',
-                '4000000000000002' => 'pm_card_chargeDeclined',
-            ];
-            $rawNumber = preg_replace('/\s+/', '', $data['card_number']);
-            $pmToken   = $testTokenMap[$rawNumber] ?? 'pm_card_visa';
+            $paymentMethodId = isset($data['payment_method_id']) ? trim((string) $data['payment_method_id']) : '';
+            if ($paymentMethodId === '') {
+                $rawNumber = preg_replace('/\s+/', '', (string) ($data['card_number'] ?? ''));
+                $pmToken = $this->resolveTestPaymentMethodToken($rawNumber);
+                if (! $pmToken) {
+                    return $this->error(
+                        'Raw card entry is only supported with Stripe test cards in test mode. Use Stripe Elements for live payments.',
+                        Response::HTTP_UNPROCESSABLE_ENTITY
+                    );
+                }
+                $paymentMethodId = $pmToken;
+            }
 
             $intent = \Stripe\PaymentIntent::create([
                 'amount'               => $amountCents,
-                'currency'             => 'usd',
-                'payment_method'       => $pmToken,
+                'currency'             => $currency,
+                'payment_method'       => $paymentMethodId,
                 'payment_method_types' => ['card'],
                 'confirm'              => true,
                 'description'          => "Bill {$bill->bill_number}",
@@ -1758,8 +1786,9 @@ class HmsApiController extends Controller
     public function appointmentPaymentIntent(string $id): JsonResponse
     {
         $row = DB::table('appointments as a')
+            ->leftJoin('patients as p', 'p.id', '=', 'a.patient_id')
             ->leftJoin('users as u', 'u.id', '=', 'a.doctor_id')
-            ->select('a.*', 'u.full_name as doctor_full_name')
+            ->select('a.*', 'p.full_name as patient_name', 'u.full_name as doctor_full_name')
             ->where('a.id', $id)
             ->first();
 
@@ -1771,12 +1800,13 @@ class HmsApiController extends Controller
             return $this->error('This appointment fee has already been paid.', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $feeBdt = (float) $row->fee_bdt;
+        $feeBdt = $this->resolveAppointmentFeeBdt($row);
         if ($feeBdt <= 0) {
             return $this->error('This appointment has no fee to collect.', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $stripeKey = config('services.stripe.secret');
+        $stripeKey = $this->stripeSecretKey();
+        $currency = $this->stripeCurrency();
         if (! $stripeKey) {
             return $this->error('Stripe is not configured on this server.', Response::HTTP_SERVICE_UNAVAILABLE);
         }
@@ -1784,11 +1814,11 @@ class HmsApiController extends Controller
         try {
             \Stripe\Stripe::setApiKey($stripeKey);
 
-            $amountCents = max(50, (int) round(($feeBdt / 110) * 100));
+            $amountCents = $this->bdtToMinorUnits($feeBdt);
 
             $intent = \Stripe\PaymentIntent::create([
                 'amount'      => $amountCents,
-                'currency'    => 'usd',
+                'currency'    => $currency,
                 'description' => "Appointment {$row->appointment_number} — {$row->doctor_full_name}",
                 'metadata'    => [
                     'appointment_id'     => (string) $row->id,
@@ -1823,6 +1853,12 @@ class HmsApiController extends Controller
         $appointment = DB::table('appointments')->where('id', $id)->first();
         if (! $appointment) {
             return $this->error('Appointment not found', Response::HTTP_NOT_FOUND);
+        }
+        if ($appointment->payment_status === 'paid') {
+            return $this->error('This appointment fee has already been paid.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        if (! $this->validateSucceededPaymentIntent($data['payment_intent_id'], ['appointment_id' => (string) $id])) {
+            return $this->error('Payment could not be verified with Stripe.', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         DB::table('appointments')->where('id', $id)->update([
@@ -1866,7 +1902,8 @@ class HmsApiController extends Controller
             return $this->error('This bill has no outstanding balance.', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $stripeKey = config('services.stripe.secret');
+        $stripeKey = $this->stripeSecretKey();
+        $currency = $this->stripeCurrency();
         if (! $stripeKey) {
             return $this->error('Stripe is not configured on this server.', Response::HTTP_SERVICE_UNAVAILABLE);
         }
@@ -1875,11 +1912,11 @@ class HmsApiController extends Controller
             \Stripe\Stripe::setApiKey($stripeKey);
 
             // Stripe does not support BDT; charge in USD (1 USD ≈ 110 BDT, min 50 cents)
-            $amountCents = max(50, (int) round(($outstanding / 110) * 100));
+            $amountCents = $this->bdtToMinorUnits($outstanding);
 
             $intent = \Stripe\PaymentIntent::create([
                 'amount'      => $amountCents,
-                'currency'    => 'usd',
+                'currency'    => $currency,
                 'description' => "Bill {$row->bill_number} — Patient",
                 'metadata'    => [
                     'bill_id'     => (string) $row->id,
@@ -1911,6 +1948,9 @@ class HmsApiController extends Controller
         $bill = DB::table('bills')->where('id', $id)->first();
         if (! $bill) {
             return $this->error('Bill not found', Response::HTTP_NOT_FOUND);
+        }
+        if (! $this->validateSucceededPaymentIntent($data['payment_intent_id'], ['bill_id' => (string) $id])) {
+            return $this->error('Payment could not be verified with Stripe.', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $existing  = $this->decodeJson($bill->payments) ?? [];
@@ -1945,6 +1985,104 @@ class HmsApiController extends Controller
             ->first();
 
         return $this->ok($this->mapBill($row), 'Payment recorded successfully');
+    }
+
+    private function stripeSecretKey(): ?string
+    {
+        $secret = config('services.stripe.secret');
+        return is_string($secret) ? trim($secret) : null;
+    }
+
+    private function stripeCurrency(): string
+    {
+        $currency = config('services.stripe.currency', 'usd');
+        return strtolower(is_string($currency) ? $currency : 'usd');
+    }
+
+    private function bdtToMinorUnits(float $amountBdt): int
+    {
+        return max(50, (int) round(($amountBdt / 110) * 100));
+    }
+
+    private function resolveAppointmentFeeBdt(object $appointment): float
+    {
+        $feeBdt = (float) ($appointment->fee_bdt ?? 0);
+        if ($feeBdt > 0) {
+            return $feeBdt;
+        }
+
+        $doctorProfileRaw = $appointment->doctor_profile ?? null;
+        if (! $doctorProfileRaw && isset($appointment->doctor_id)) {
+            $doctorProfileRaw = DB::table('users')
+                ->where('id', (string) $appointment->doctor_id)
+                ->value('doctor_profile');
+        }
+
+        $doctorFee = $this->extractConsultationFeeBdt($doctorProfileRaw);
+
+        return $doctorFee > 0 ? $doctorFee : 0.0;
+    }
+
+    private function extractConsultationFeeBdt(mixed $doctorProfileRaw): float
+    {
+        $doctorProfile = $this->decodeJson($doctorProfileRaw);
+        if (is_string($doctorProfile)) {
+            $doctorProfile = $this->decodeJson($doctorProfile);
+        }
+
+        if (! is_array($doctorProfile)) {
+            return 0.0;
+        }
+
+        return (float) ($doctorProfile['consultation_fee_bdt'] ?? 0);
+    }
+
+    private function resolveTestPaymentMethodToken(string $rawCardNumber): ?string
+    {
+        $key = $this->stripeSecretKey();
+        if (! is_string($key) || ! str_starts_with($key, 'sk_test_')) {
+            return null;
+        }
+
+        $testTokenMap = [
+            '4242424242424242' => 'pm_card_visa',
+            '5555555555554444' => 'pm_card_mastercard',
+            '4000056655665556' => 'pm_card_visa_debit',
+            '4000000000000002' => 'pm_card_chargeDeclined',
+        ];
+
+        return $testTokenMap[$rawCardNumber] ?? null;
+    }
+
+    private function validateSucceededPaymentIntent(string $paymentIntentId, array $requiredMetadata = []): bool
+    {
+        $stripeKey = $this->stripeSecretKey();
+        if (! $stripeKey) {
+            return false;
+        }
+
+        try {
+            \Stripe\Stripe::setApiKey($stripeKey);
+            $intent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
+            if (($intent->status ?? null) !== 'succeeded') {
+                return false;
+            }
+
+            foreach ($requiredMetadata as $metaKey => $expectedValue) {
+                $actual = $intent->metadata[$metaKey] ?? null;
+                if ((string) $actual !== (string) $expectedValue) {
+                    return false;
+                }
+            }
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::warning('Stripe intent validation failed', [
+                'payment_intent_id' => $paymentIntentId,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
     }
 
     private function sendOtpEmail(string $email, string $otpCode, string $purpose, ?string $userId = null): void

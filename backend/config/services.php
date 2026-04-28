@@ -36,7 +36,8 @@ return [
     ],
 
     'stripe' => [
-        'secret'   => env('STRIPE_SECRET_KEY'),
+        // Support both common naming styles to avoid misconfiguration.
+        'secret'   => env('STRIPE_SECRET_KEY', env('STRIPE_SECRET')),
         'currency' => env('STRIPE_CURRENCY', 'usd'),
     ],
 

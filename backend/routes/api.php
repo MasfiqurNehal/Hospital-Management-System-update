@@ -44,6 +44,10 @@ Route::get('/prescriptions/{id}', [HmsApiController::class, 'getPrescription']);
 
 Route::get('/lab-tests', [HmsApiController::class, 'listLabTests']);
 Route::get('/lab-tests/{id}', [HmsApiController::class, 'getLabTest']);
+Route::post('/lab-tests', [HmsApiController::class, 'createLabTest']);
+Route::post('/lab-tests/{id}/payment-intent', [HmsApiController::class, 'labTestPaymentIntent']);
+Route::post('/lab-tests/{id}/pay-direct', [HmsApiController::class, 'labTestPayDirect']);
+Route::post('/lab-tests/{id}/mark-paid', [HmsApiController::class, 'markLabTestPaid']);
 
 Route::get('/pharmacy/orders', [HmsApiController::class, 'listPharmacyOrders']);
 Route::get('/pharmacy/inventory', [HmsApiController::class, 'listInventory']);

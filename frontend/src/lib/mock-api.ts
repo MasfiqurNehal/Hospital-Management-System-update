@@ -226,6 +226,12 @@ export const labAPI = {
   get(id: string): Promise<ApiResponse<LabTest>> {
     return request(`/lab-tests/${encodeURIComponent(id)}`);
   },
+  create(payload: { patient_id: string; ordered_by_doctor_id?: string; test_name: string; test_code?: string; catalog_item_id?: string; price_bdt: number; priority?: string; clinical_notes?: string; }): Promise<ApiResponse<LabTest>> {
+    return request('/lab-tests', { method: 'POST', body: JSON.stringify(payload) });
+  },
+  payDirect(labTestId: string, payload: { card_number: string; exp_month?: number; exp_year?: number; cvc?: string; card_name?: string; }): Promise<ApiResponse<{ payment_intent_id: string; amount_bdt: number; amount_usd_cents: number }>> {
+    return request(`/lab-tests/${encodeURIComponent(labTestId)}/pay-direct`, { method: 'POST', body: JSON.stringify(payload) });
+  },
 };
 
 export const pharmacyAPI = {
@@ -291,11 +297,20 @@ export const alertAPI = {
   getActive(): Promise<ApiResponse<Alert[]>> {
     return request('/alerts/active');
   },
-  getNotifications(): Promise<ApiResponse<InAppNotification[]>> {
-    return request('/alerts/notifications');
+  getNotifications(filters?: { user_id?: string; unread_only?: boolean }): Promise<ApiResponse<InAppNotification[]>> {
+    return request(withQuery('/alerts/notifications', {
+      user_id: filters?.user_id,
+      unread_only: filters?.unread_only ? 1 : undefined,
+    }));
   },
   acknowledge(alertId: string): Promise<ApiResponse<{ success: boolean }>> {
     return request(`/alerts/${encodeURIComponent(alertId)}/acknowledge`, { method: 'POST' });
+  },
+  markNotificationRead(notificationId: string, payload: { user_id: string }): Promise<ApiResponse<InAppNotification>> {
+    return request(`/alerts/notifications/${encodeURIComponent(notificationId)}/read`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
   },
 };
 

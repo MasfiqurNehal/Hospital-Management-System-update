@@ -1,15 +1,29 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
 import { Calendar, Video } from 'lucide-react';
 import { PageHeader, SectionCard, KPICard } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
-import { MOCK_APPOINTMENTS } from '@/lib/mock-data';
+import { useAuthStore } from '@/lib/auth-store';
+import { appointmentAPI } from '@/lib/mock-api';
 import { formatBDT, formatDateTime } from '@/lib/utils';
-
-const doctorId = 'user-doc-001';
+import type { Appointment } from '@/types';
 
 export default function DoctorAppointmentsPage() {
-  const appointments = MOCK_APPOINTMENTS.filter((a) => a.doctor_id === doctorId);
+  const { user } = useAuthStore();
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    appointmentAPI.list({ doctor_id: user.id }).then((r) => setAppointments(r.data)).catch(() => setAppointments([]));
+  }, [user?.id]);
+
   const active = appointments.filter((a) => ['scheduled', 'confirmed', 'checked_in', 'in_progress'].includes(a.status));
   const teleconsults = appointments.filter((a) => a.appointment_type === 'teleconsultation').length;
+  const sortedAppointments = useMemo(
+    () => [...appointments].sort((a, b) => new Date(b.scheduled_at).getTime() - new Date(a.scheduled_at).getTime()),
+    [appointments],
+  );
 
   return (
     <div className="space-y-6">
@@ -21,7 +35,7 @@ export default function DoctorAppointmentsPage() {
         <KPICard label="Teleconsults" value={teleconsults} icon={Video} accentColor="accent" />
       </div>
 
-      <SectionCard title="Appointment List" description="SRS Module 3">
+      <SectionCard title="Appointment List" description="All scheduled, active, and completed appointments for your patients.">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="border-b border-border bg-secondary/30">
@@ -35,7 +49,7 @@ export default function DoctorAppointmentsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {appointments.map((appointment) => (
+              {sortedAppointments.map((appointment) => (
                 <tr key={appointment.id} className="hover:bg-secondary/30">
                   <td className="px-5 py-3">{formatDateTime(appointment.scheduled_at)}</td>
                   <td className="px-3 py-3">

@@ -7,12 +7,12 @@ import { useRouter } from 'next/navigation';
 import { Bell, CheckCircle2, Home, LogOut, Menu, Search, Settings, ShieldCheck, User as UserIcon, X } from 'lucide-react';
 import { BrandLink } from '@/components/shared/brand-mark';
 import { useAuthStore, roleDashboardPath } from '@/lib/auth-store';
-import { authAPI } from '@/lib/mock-api';
-import { MOCK_NOTIFICATIONS } from '@/lib/mock-data';
+import { alertAPI, authAPI } from '@/lib/mock-api';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { cn, formatRelative } from '@/lib/utils';
 import { roleLabels } from '@/lib/navigation';
+import type { InAppNotification } from '@/types';
 
 interface TopbarProps {
   onMobileMenuOpen: () => void;
@@ -25,6 +25,7 @@ export function Topbar({ onMobileMenuOpen }: TopbarProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [menuPosition, setMenuPosition] = useState<React.CSSProperties>({});
+  const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   const notifButtonRef = useRef<HTMLButtonElement>(null);
   const profileButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -41,6 +42,29 @@ export function Topbar({ onMobileMenuOpen }: TopbarProps) {
     window.addEventListener('keydown', closeMenus);
     return () => window.removeEventListener('keydown', closeMenus);
   }, []);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const currentUserId = user.id;
+
+    let cancelled = false;
+    async function loadNotifications() {
+      try {
+        const res = await alertAPI.getNotifications({ user_id: currentUserId });
+        if (!cancelled) setNotifications(res.data);
+      } catch {
+        if (!cancelled) setNotifications([]);
+      }
+    }
+
+    void loadNotifications();
+    const timer = window.setInterval(loadNotifications, 30000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [user?.id]);
 
   useEffect(() => {
     function repositionOpenMenu() {
@@ -100,7 +124,7 @@ export function Topbar({ onMobileMenuOpen }: TopbarProps) {
 
   if (!user) return null;
 
-  const unreadCount = MOCK_NOTIFICATIONS.filter((n) => !n.is_read).length;
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
   const settingsHref = user.role === 'hospital_admin' ? '/admin/settings' : '/profile?section=settings';
   const alertsHref = user.role === 'hospital_admin' ? '/admin/alerts' : roleDashboardPath(user.role);
 
@@ -123,6 +147,24 @@ export function Topbar({ onMobileMenuOpen }: TopbarProps) {
   function goToSettings() {
     setProfileOpen(false);
     router.push(settingsHref);
+  }
+
+  async function handleNotificationClick(notification: InAppNotification) {
+    if (!user) return;
+
+    if (!notification.is_read) {
+      setNotifications((prev) => prev.map((n) => (n.id === notification.id ? { ...n, is_read: true } : n)));
+      try {
+        await alertAPI.markNotificationRead(notification.id, { user_id: user.id });
+      } catch {
+        // Keep optimistic UI update to avoid counter flicker on transient network errors.
+      }
+    }
+
+    setNotifOpen(false);
+    if (notification.action_url) {
+      router.push(notification.action_url);
+    }
   }
 
   return (
@@ -174,12 +216,18 @@ export function Topbar({ onMobileMenuOpen }: TopbarProps) {
             onClick={openNotifications}
             type="button"
             aria-label="Open notifications"
-            className="relative inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-secondary"
+            className="relative inline-flex h-9 min-w-9 items-center justify-center gap-1.5 rounded-md px-2 hover:bg-secondary"
           >
             <Bell className="h-[18px] w-[18px]" />
             {unreadCount > 0 && (
               <span className="absolute right-0 top-0 z-10 flex h-4 min-w-4 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground ring-2 ring-background">
                 {unreadCount}
+              </span>
+            )}
+            {unreadCount === 0 && (
+              <span className="hidden items-center gap-1 text-[11px] font-medium text-muted-foreground sm:inline-flex">
+                <CheckCircle2 className="h-3.5 w-3.5 text-healthy" />
+                Open
               </span>
             )}
           </button>
@@ -197,12 +245,13 @@ export function Topbar({ onMobileMenuOpen }: TopbarProps) {
                   </button>
                 </div>
                 <div className="max-h-[min(400px,calc(100vh-10rem))] overflow-y-auto scrollbar-slim">
-                  {MOCK_NOTIFICATIONS.map((n) => (
-                    <a
+                  {notifications.map((n) => (
+                    <button
                       key={n.id}
-                      href={n.action_url}
+                      type="button"
+                      onClick={() => void handleNotificationClick(n)}
                       className={cn(
-                        'flex gap-3 border-b border-border px-4 py-3 hover:bg-secondary/50',
+                        'flex w-full gap-3 border-b border-border px-4 py-3 text-left hover:bg-secondary/50',
                         !n.is_read && 'bg-primary/5',
                       )}
                     >
@@ -237,7 +286,7 @@ export function Topbar({ onMobileMenuOpen }: TopbarProps) {
                           {formatRelative(n.created_at)}
                         </div>
                       </div>
-                    </a>
+                    </button>
                   ))}
                 </div>
                 <div className="border-t border-border px-4 py-2.5 text-center">

@@ -58,7 +58,7 @@ export const navigationByRole: Record<UserRole, NavGroup[]> = {
     {
       items: [
         { label: 'My Dashboard', href: '/doctor', icon: LayoutDashboard },
-        { label: 'Appointments', href: '/doctor/appointments', icon: Calendar, badge: 8 },
+        { label: 'Appointments', href: '/doctor/appointments', icon: Calendar },
         { label: 'Prescriptions', href: '/doctor/prescriptions', icon: FileText },
         { label: 'Patients', href: '/doctor/patients', icon: Users },
         { label: 'Lab Orders', href: '/doctor/lab-orders', icon: FlaskConical },

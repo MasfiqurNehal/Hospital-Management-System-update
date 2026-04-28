@@ -1,10 +1,12 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronLeft, X } from 'lucide-react';
 import { BrandMark } from '@/components/shared/brand-mark';
 import { useAuthStore } from '@/lib/auth-store';
+import { appointmentAPI } from '@/lib/mock-api';
 import { navigationByRole, roleLabels } from '@/lib/navigation';
 import { Avatar } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
@@ -18,9 +20,38 @@ interface SidebarProps {
 export function Sidebar({ collapsed, onToggle, onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const { user, tenant } = useAuthStore();
+  const [doctorAppointmentCount, setDoctorAppointmentCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (user?.role !== 'doctor' || !user.id) {
+      setDoctorAppointmentCount(null);
+      return;
+    }
+
+    appointmentAPI
+      .list({ doctor_id: user.id })
+      .then((response) => {
+        const activeStatuses = ['scheduled', 'confirmed', 'checked_in', 'in_progress'];
+        setDoctorAppointmentCount(
+          response.data.filter((appointment) => activeStatuses.includes(appointment.status)).length,
+        );
+      })
+      .catch(() => setDoctorAppointmentCount(0));
+  }, [user?.id, user?.role]);
+
   if (!user) return null;
 
   const groups = navigationByRole[user.role] ?? [];
+
+  const resolveBadge = (href: string, badge?: string | number) => {
+    if (href === '/doctor/appointments' && user.role === 'doctor') {
+      return doctorAppointmentCount ?? badge;
+    }
+
+    return badge;
+  };
+
+  const hasBadge = (badge?: string | number) => badge !== undefined && badge !== null && badge !== '' && badge !== 0;
 
   return (
     <aside
@@ -84,6 +115,7 @@ export function Sidebar({ collapsed, onToggle, onNavigate }: SidebarProps) {
               {group.items.map((item) => {
                 const active = pathname === item.href || pathname.startsWith(item.href + '/');
                 const Icon = item.icon;
+                const badge = resolveBadge(item.href, item.badge);
                 return (
                   <li key={item.href}>
                     <Link
@@ -108,7 +140,7 @@ export function Sidebar({ collapsed, onToggle, onNavigate }: SidebarProps) {
                       {!collapsed && (
                         <>
                           <span className="flex-1 truncate">{item.label}</span>
-                          {item.badge !== undefined && (
+                          {hasBadge(badge) && (
                             <span
                               className={cn(
                                 'inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold',
@@ -119,12 +151,12 @@ export function Sidebar({ collapsed, onToggle, onNavigate }: SidebarProps) {
                                     : 'bg-secondary text-secondary-foreground',
                               )}
                             >
-                              {item.badge}
+                              {badge}
                             </span>
                           )}
                         </>
                       )}
-                      {collapsed && item.badge !== undefined && (
+                      {collapsed && hasBadge(badge) && (
                         <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
                       )}
                     </Link>
